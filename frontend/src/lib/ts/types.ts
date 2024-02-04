@@ -4,11 +4,11 @@ export enum Availability {
   Inconvenient = "Inconvenient",
 }
 
-interface User {
+export interface User {
   name: string;
 };
 
-type OthersValues = {
+export type OthersValues = {
   [key in Availability]: User[];
 };
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Availability, type Timeslot } from "$lib/ts/types";
 	import { onMount } from "svelte";
+  import SlotStats from "./SlotStats.svelte";
 
   const now = new Date().getTime();
   export let slots: Timeslot[] = Array.from({ length: 10 }, (_, i) => ({
@@ -28,6 +29,15 @@
   <div class="wrapper">
     {#each slots as slot, index}
       <div class="column">
+
+        <div class="top">
+        <!--
+          Switch to this one once we have some actual (or toy data) within this component:
+          <SlotStats othersValues={slot.othersValues} columnWidth={columnWidth} />
+         -->
+          <SlotStats columnWidth={columnWidth}/>
+        </div>
+
         {#if index === 0 || slot.begin.getTime() != slots[index - 1].end.getTime()}
           <p class="bottom-left">{formatTime(slot.begin)}</p>
         {/if}
@@ -58,6 +68,10 @@
     position: relative;
     box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.5);
     height: 100%;
+  }
+  .top {
+    position: absolute;
+    top: 10px;
   }
   .bottom-left {
     position: absolute;

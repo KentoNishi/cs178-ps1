@@ -1,5 +1,6 @@
 <script>
 	import InputPane from "$lib/components/InputPane.svelte";
+  import SlotStats from "$lib/components/SlotStats.svelte";
 </script>
 <InputPane />
 
