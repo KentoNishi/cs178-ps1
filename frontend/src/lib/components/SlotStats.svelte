@@ -15,17 +15,17 @@
 
 <div class="slot-stats">
   {#if othersValues.Available.length > 0}
-    <div class="slot-count available-count" style="flex: {othersValues.Available.length}">
+    <div class="slot-count available-color" style="flex: {othersValues.Available.length}">
       {othersValues.Available.length}
     </div>
   {/if}
   {#if othersValues.Inconvenient.length > 0}
-    <div class="slot-count inconvenient-count" style="flex: {othersValues.Inconvenient.length}">
+    <div class="slot-count inconvenient-color" style="flex: {othersValues.Inconvenient.length}">
       {othersValues.Inconvenient.length}
     </div>
   {/if}
   {#if othersValues.Unavailable.length > 0}
-    <div class="slot-count unavailable-count" style="flex: {othersValues.Unavailable.length}">
+    <div class="slot-count unavailable-color" style="flex: {othersValues.Unavailable.length}">
       {othersValues.Unavailable.length}
     </div>
   {/if}
@@ -49,23 +49,13 @@
   .slot-stats {
     border-radius: 5px;
     overflow: hidden;
-    width: calc(var(--column-width) - 10px);
+    width: 100%;
     min-height: 40px;
     display: flex;
     flex-direction: row;
     align-items: center;
     background-color: aliceblue;
     content: "";
-    border: 1px solid black;
-    box-shadow: 1px 1px 10px black;
-  }
-  .available-count {
-    background-color: green;
-  }
-  .inconvenient-count {
-    background-color: orange;
-  }
-  .unavailable-count {
-    background-color: red;
+    box-shadow: 1px 1px 10px rgb(167, 167, 167);
   }
 </style>

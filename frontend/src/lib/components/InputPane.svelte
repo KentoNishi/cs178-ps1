@@ -9,9 +9,15 @@
     end: new Date(now + 1000 * 60 * 60 * (i + 1)),
     userValue: Availability.Unavailable,
     othersValues: {
-      [Availability.Available]: [],
-      [Availability.Unavailable]: [],
-      [Availability.Inconvenient]: []
+      [Availability.Available]: [{
+        name: "John"
+      }],
+      [Availability.Unavailable]: [{
+        name: "Alice"
+      }],
+      [Availability.Inconvenient]: [{
+        name: "Bob"
+      }]
     }
   }));
   let scroller: HTMLDivElement;
@@ -19,7 +25,7 @@
   const updateColumnWidth = () => {
     if (!scroller) return;
     const rect = scroller.getBoundingClientRect();
-    columnWidth = rect.width / Math.min(slots.length, rect.width / 100)
+    columnWidth = rect.width / Math.min(slots.length, rect.width / 100);
   };
   onMount(updateColumnWidth);
   const formatTime = (date: Date) => date.toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric" });
@@ -29,20 +35,21 @@
   <div class="wrapper">
     {#each slots as slot, index}
       <div class="column">
-
         <div class="top">
-        <!--
-          Switch to this one once we have some actual (or toy data) within this component:
-          <SlotStats othersValues={slot.othersValues} columnWidth={columnWidth} />
-         -->
-          <SlotStats columnWidth={columnWidth}/>
+          <SlotStats othersValues={slot.othersValues} />
         </div>
 
         {#if index === 0 || slot.begin.getTime() != slots[index - 1].end.getTime()}
-          <p class="bottom-left">{formatTime(slot.begin)}</p>
+          <p class="bottom-left no-break">{formatTime(slot.begin)}</p>
         {/if}
-        <p class="bottom-right">{formatTime(slot.end)}</p>
-        <p>{slot.userValue}</p>
+        <p class="bottom-right no-break">{formatTime(slot.end)}</p>
+        <div class="regions">
+          {#each ["available", "inconvenient", "unavailable"] as color}
+            <div class="region {color}-color" style="height: 100%; width: 100%;">
+              <div class="dot" />
+            </div>
+          {/each}
+        </div>
       </div>
     {/each}
   </div>
@@ -53,12 +60,14 @@
     display: inline-flex;
     flex-direction: row;
     height: 100%;
+    width: 100%;
   }
   .scroller {
     overflow-x: scroll;
     overflow-y: hidden;
     padding: 0px calc(var(--column-width) / 2);
     height: 100vh;
+    user-select: none;
   }
   .column {
     display: flex;
@@ -66,12 +75,30 @@
     justify-content: center;
     width: var(--column-width);
     position: relative;
-    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.5);
+    border-left: 2px solid rgb(255, 255, 255);
     height: 100%;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    background-color: rgba(92, 92, 92, 0.229);
+    border-radius: 50%;
+  }
+  .regions {
+    height: calc(100% - 120px);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .region {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   .top {
     position: absolute;
     top: 10px;
+    width: 90%;
   }
   .bottom-left {
     position: absolute;
@@ -84,5 +111,8 @@
     bottom: 0;
     right: 0;
     transform: translateX(50%);
+  }
+  .no-break {
+    white-space: nowrap;
   }
 </style>
