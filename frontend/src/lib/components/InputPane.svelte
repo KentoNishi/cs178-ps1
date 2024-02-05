@@ -4,22 +4,25 @@
   import SlotStats from "./SlotStats.svelte";
 
   const now = new Date().getTime();
-  export let slots: Timeslot[] = Array.from({ length: 10 }, (_, i) => ({
-    begin: new Date(now + 1000 * 60 * 60 * i),
-    end: new Date(now + 1000 * 60 * 60 * (i + 1)),
-    userValue: Availability.Unavailable,
-    othersValues: {
-      [Availability.Available]: [{
-        name: "John"
-      }],
-      [Availability.Unavailable]: [{
-        name: "Alice"
-      }],
-      [Availability.Inconvenient]: [{
-        name: "Bob"
-      }]
+  export let slots: Timeslot[] = Array.from({ length: 10 }, (_, i) => {
+    return {
+      begin: new Date(now + 1000 * 60 * 60 * i),
+      end: new Date(now + 1000 * 60 * 60 * (i + 1)),
+      userValue: Availability.Unavailable,
+      othersValues: {
+        [Availability.Available]: [{
+          name: "John"
+        }],
+        [Availability.Unavailable]: [{
+          name: "Alice"
+        }],
+        [Availability.Inconvenient]: []
+        // [{
+        //   name: "Bob"
+        // }]
+      }
     }
-  }));
+  });
   let scroller: HTMLDivElement;
   let columnWidth = 0;
   const updateColumnWidth = () => {
@@ -29,8 +32,19 @@
   };
   onMount(updateColumnWidth);
   const formatTime = (date: Date) => date.toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric" });
+  let regionSelection: { index: number, availability: Availability } | null = null;
   const startSelectRegion = (index: number, availability: Availability) => {
-    console.log(index, availability);
+    regionSelection = { index, availability };
+  };
+  const endRegionSelection = (index: number, availability: Availability) => {
+    if (!regionSelection) return;
+    const start = Math.min(regionSelection.index, index);
+    const end = Math.max(regionSelection.index, index);
+    for (let i = start; i <= end; i++) {
+      slots[i] = { ...slots[i], userValue: availability };
+    }
+    regionSelection = null;
+    slots = [...slots];
   };
 </script>
 <svelte:window on:resize={updateColumnWidth} />
@@ -43,9 +57,9 @@
         </div>
 
         {#if index === 0 || slot.begin.getTime() != slots[index - 1].end.getTime()}
-          <p class="bottom-left no-break">{formatTime(slot.begin)}</p>
+          <p class="overlay bottom-left no-break">{formatTime(slot.begin)}</p>
         {/if}
-        <p class="bottom-right no-break">{formatTime(slot.end)}</p>
+        <p class="overlay bottom-right no-break">{formatTime(slot.end)}</p>
         <div class="regions">
           {#each [Availability.Available, Availability.Inconvenient, Availability.Unavailable] as availability}
             <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -53,8 +67,14 @@
               class="region {availability}-color"
               style="height: 100%; width: 100%;"
               on:mousedown={() => startSelectRegion(index, availability)}
+              on:mouseup={() => endRegionSelection(index, availability)}
             >
-              <div class="dot" />
+              <div>
+                <div class="dot absolute" />
+                {#if slot.userValue === availability}
+                  <div class="overlay absolute" style="font-size: 50px; font-weight: bold;">✓</div>
+                {/if}
+              </div>
             </div>
           {/each}
         </div>
@@ -82,30 +102,45 @@
     justify-content: center;
     width: var(--column-width);
     position: relative;
-    border-left: 2px solid rgb(255, 255, 255);
+    border-left: 5px solid rgb(255, 255, 255);
     height: 100%;
   }
+  .absolute {
+    position: absolute;
+    transform: translate(-50%, -50%);
+  }
   .dot {
-    width: 10px;
-    height: 10px;
+    width: 60px;
+    height: 60px;
     background-color: rgba(92, 92, 92, 0.229);
     border-radius: 50%;
     transition: width 0.1s, height 0.1s;
   }
-  .region:hover > .dot {
-    width: 25px;
-    height: 25px;
+  .region:hover .dot {
+    width: 70px;
+    height: 70px;
   }
   .regions {
     height: calc(100% - 120px);
     flex: 1;
     display: flex;
     flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
   }
   .region {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: transform 0.1s;
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .region:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 0px 10px rgba(160, 160, 160, 0.5);
+    z-index: 100;
   }
   .top {
     position: absolute;
@@ -126,5 +161,8 @@
   }
   .no-break {
     white-space: nowrap;
+  }
+  .overlay {
+    z-index: 100;
   }
 </style>

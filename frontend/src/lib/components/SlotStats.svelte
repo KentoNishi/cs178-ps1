@@ -8,27 +8,16 @@
   };
 </script>
 
-<div class="slot-stats">
-  {#if othersValues.available.length > 0}
-    <div class="slot-count available-color" style="flex: {othersValues.available.length}">
-      {othersValues.available.length}
-    </div>
-  {/if}
-  {#if othersValues.inconvenient.length > 0}
-    <div class="slot-count inconvenient-color" style="flex: {othersValues.inconvenient.length}">
-      {othersValues.inconvenient.length}
-    </div>
-  {/if}
-  {#if othersValues.unavailable.length > 0}
-    <div class="slot-count unavailable-color" style="flex: {othersValues.unavailable.length}">
-      {othersValues.unavailable.length}
-    </div>
-  {/if}
-  {#if othersValues.unavailable.length + othersValues.inconvenient.length + othersValues.available.length == 0}
-  <div class="slot-count" style="flex: 1">
-    No data yet!
+<div class="slot-stats" style="grid-template-columns: {othersValues.available.length}fr {othersValues.inconvenient.length}fr {othersValues.unavailable.length}fr;">
+  <div class="slot-count available-color" class:translucent={!othersValues.available.length}>
+    {othersValues.available.length}
   </div>
-  {/if}
+  <div class="slot-count inconvenient-color" class:translucent={!othersValues.inconvenient.length}>
+    {othersValues.inconvenient.length}
+  </div>
+  <div class="slot-count unavailable-color" class:translucent={!othersValues.unavailable.length}>
+    {othersValues.unavailable.length}
+  </div>
 </div>
 
 <style>
@@ -40,17 +29,20 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding: 0px 5px;
   }
   .slot-stats {
     border-radius: 5px;
     overflow: hidden;
     width: 100%;
     min-height: 40px;
-    display: flex;
-    flex-direction: row;
+    display: grid;
     align-items: center;
     background-color: aliceblue;
     content: "";
-    box-shadow: 1px 1px 10px rgb(167, 167, 167);
+    box-shadow: 1px 1px 10px rgb(188, 188, 188);
+  }
+  .translucent {
+    opacity: 0.5;
   }
 </style>
