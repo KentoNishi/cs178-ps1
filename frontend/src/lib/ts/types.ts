@@ -1,14 +1,14 @@
 export enum Availability {
-  Available = "Available",
-  Unavailable = "Unavailable",
-  Inconvenient = "Inconvenient",
+  Available = "available",
+  Unavailable = "unavailable",
+  Inconvenient = "inconvenient",
 }
 
-interface User {
+export interface User {
   name: string;
 };
 
-type OthersValues = {
+export type OthersValues = {
   [key in Availability]: User[];
 };
 
