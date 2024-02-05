@@ -6,6 +6,7 @@
 <style>
   :global(body) {
     margin: 0px;
+    font-family: 'Segoe UI';
   }
   :global(.available-color) {
     background-color: rgb(87, 255, 127);
