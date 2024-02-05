@@ -3,6 +3,7 @@
 	import { onMount, tick } from "svelte";
   import SlotStats from "./SlotStats.svelte";
 
+  const currentUser = {};
   const now = new Date().getTime();
   export let slots: Timeslot[] = Array.from({ length: 10 }, (_, i) => {
     return {
@@ -149,13 +150,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: transform 0.1s;
+    transition: 0.1s;
     border-radius: 5px;
     overflow: hidden;
     cursor: pointer;
   }
   .region:hover {
-    transform: scale(1.1);
+    /* transform: scale(1.1); */
     box-shadow: 0px 0px 10px rgba(160, 160, 160, 0.5);
     z-index: 100;
   }
