@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Availability, type Timeslot } from "$lib/ts/types";
-	import { onMount } from "svelte";
+	import { onMount, tick } from "svelte";
   import SlotStats from "./SlotStats.svelte";
 
   const now = new Date().getTime();
@@ -36,15 +36,19 @@
   const startSelectRegion = (index: number, availability: Availability) => {
     regionSelection = { index, availability };
   };
-  const endRegionSelection = (index: number, availability: Availability) => {
+  let renderedSlotIndices = Array.from({ length: slots.length }, (_, i) => i);
+  const endRegionSelection = async (index: number, availability: Availability) => {
     if (!regionSelection) return;
     const start = Math.min(regionSelection.index, index);
     const end = Math.max(regionSelection.index, index);
     for (let i = start; i <= end; i++) {
       slots[i] = { ...slots[i], userValue: availability };
     }
+    renderedSlotIndices = renderedSlotIndices.filter(i => i < start || i > end);
+    await tick();
     regionSelection = null;
     slots = [...slots];
+    renderedSlotIndices = Array.from({ length: slots.length }, (_, i) => i);
   };
 </script>
 <svelte:window on:resize={updateColumnWidth} />
@@ -71,8 +75,8 @@
             >
               <div>
                 <div class="dot absolute" />
-                {#if slot.userValue === availability}
-                  <div class="overlay absolute" style="font-size: 50px; font-weight: bold;">✓</div>
+                {#if slot.userValue === availability && renderedSlotIndices.includes(index)}
+                  <div class="overlay absolute checkmark" style="font-size: 50px; font-weight: bold;">✓</div>
                 {/if}
               </div>
             </div>
@@ -108,6 +112,19 @@
   .absolute {
     position: absolute;
     transform: translate(-50%, -50%);
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  .checkmark {
+    animation: fade-in 0.1s;
   }
   .dot {
     width: 60px;
