@@ -43,9 +43,9 @@
         </div>
 
         {#if index === 0 || slot.begin.getTime() != slots[index - 1].end.getTime()}
-          <p class="bottom-left no-break">{formatTime(slot.begin)}</p>
+          <p class="bottom-left no-break time-marker">{formatTime(slot.begin)}</p>
         {/if}
-        <p class="bottom-right no-break">{formatTime(slot.end)}</p>
+        <p class="bottom-right no-break time-marker">{formatTime(slot.end)}</p>
         <div class="regions">
           {#each [Availability.Available, Availability.Inconvenient, Availability.Unavailable] as availability}
             <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -82,7 +82,6 @@
     justify-content: center;
     width: var(--column-width);
     position: relative;
-    border-left: 2px solid rgb(255, 255, 255);
     height: 100%;
   }
   .dot {
@@ -101,6 +100,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    border-left: 2px solid rgb(255, 255, 255);
   }
   .region {
     display: flex;
@@ -123,6 +123,10 @@
     bottom: 0;
     right: 0;
     transform: translateX(50%);
+  }
+  .time-marker {
+    font-size: 18px;
+    font-weight: bolder;
   }
   .no-break {
     white-space: nowrap;
