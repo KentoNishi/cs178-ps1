@@ -1,10 +1,5 @@
 <script lang="ts">
-  import { Availability, type Timeslot, type OthersValues, type User} from "$lib/ts/types";
-
-  // Toy data. Put within one of the othersValue array to test functionality.
-  // TODO: Remove this once InputPane component has data to work with.
-  const user1: User = { name: "John" };
-  const user2: User = { name: "Alice" };
+  import { Availability, type OthersValues } from "$lib/ts/types";
 
   export let othersValues: OthersValues = {
     [Availability.Available]: [],
@@ -14,22 +9,22 @@
 </script>
 
 <div class="slot-stats">
-  {#if othersValues.Available.length > 0}
-    <div class="slot-count available-color" style="flex: {othersValues.Available.length}">
-      {othersValues.Available.length}
+  {#if othersValues.available.length > 0}
+    <div class="slot-count available-color" style="flex: {othersValues.available.length}">
+      {othersValues.available.length}
     </div>
   {/if}
-  {#if othersValues.Inconvenient.length > 0}
-    <div class="slot-count inconvenient-color" style="flex: {othersValues.Inconvenient.length}">
-      {othersValues.Inconvenient.length}
+  {#if othersValues.inconvenient.length > 0}
+    <div class="slot-count inconvenient-color" style="flex: {othersValues.inconvenient.length}">
+      {othersValues.inconvenient.length}
     </div>
   {/if}
-  {#if othersValues.Unavailable.length > 0}
-    <div class="slot-count unavailable-color" style="flex: {othersValues.Unavailable.length}">
-      {othersValues.Unavailable.length}
+  {#if othersValues.unavailable.length > 0}
+    <div class="slot-count unavailable-color" style="flex: {othersValues.unavailable.length}">
+      {othersValues.unavailable.length}
     </div>
   {/if}
-  {#if othersValues.Unavailable.length + othersValues.Inconvenient.length + othersValues.Available.length == 0}
+  {#if othersValues.unavailable.length + othersValues.inconvenient.length + othersValues.available.length == 0}
   <div class="slot-count" style="flex: 1">
     No data yet!
   </div>

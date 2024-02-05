@@ -1,7 +1,7 @@
 export enum Availability {
-  Available = "Available",
-  Unavailable = "Unavailable",
-  Inconvenient = "Inconvenient",
+  Available = "available",
+  Unavailable = "unavailable",
+  Inconvenient = "inconvenient",
 }
 
 export interface User {

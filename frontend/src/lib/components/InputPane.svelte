@@ -25,10 +25,13 @@
   const updateColumnWidth = () => {
     if (!scroller) return;
     const rect = scroller.getBoundingClientRect();
-    columnWidth = rect.width / Math.min(slots.length, rect.width / 100);
+    columnWidth = Math.max(100, rect.width / slots.length);
   };
   onMount(updateColumnWidth);
   const formatTime = (date: Date) => date.toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric" });
+  const startSelectRegion = (index: number, availability: Availability) => {
+    console.log(index, availability);
+  };
 </script>
 <svelte:window on:resize={updateColumnWidth} />
 <div class="scroller" style="--column-width: {columnWidth}px;" bind:this={scroller}>
@@ -44,8 +47,13 @@
         {/if}
         <p class="bottom-right no-break">{formatTime(slot.end)}</p>
         <div class="regions">
-          {#each ["available", "inconvenient", "unavailable"] as color}
-            <div class="region {color}-color" style="height: 100%; width: 100%;">
+          {#each [Availability.Available, Availability.Inconvenient, Availability.Unavailable] as availability}
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
+            <div
+              class="region {availability}-color"
+              style="height: 100%; width: 100%;"
+              on:mousedown={() => startSelectRegion(index, availability)}
+            >
               <div class="dot" />
             </div>
           {/each}
@@ -60,7 +68,6 @@
     display: inline-flex;
     flex-direction: row;
     height: 100%;
-    width: 100%;
   }
   .scroller {
     overflow-x: scroll;
@@ -83,6 +90,11 @@
     height: 10px;
     background-color: rgba(92, 92, 92, 0.229);
     border-radius: 50%;
+    transition: width 0.1s, height 0.1s;
+  }
+  .region:hover > .dot {
+    width: 25px;
+    height: 25px;
   }
   .regions {
     height: calc(100% - 120px);
