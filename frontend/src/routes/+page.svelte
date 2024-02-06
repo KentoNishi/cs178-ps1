@@ -12,7 +12,7 @@
     background-color: rgb(87, 255, 127);
   }
   :global(.inconvenient-color) {
-    background-color: rgb(252, 255, 78);
+    background-color: rgb(249, 255, 79);
   }
   :global(.unavailable-color) {
     background-color: rgb(255, 91, 91);
