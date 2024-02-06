@@ -6,6 +6,7 @@ export enum Availability {
 
 export interface User {
   name: string;
+  id: number;
 };
 
 export type OthersValues = {

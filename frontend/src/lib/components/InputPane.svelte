@@ -1,9 +1,12 @@
 <script lang="ts">
-	import { Availability, type Timeslot } from "$lib/ts/types";
+	import { Availability, type Timeslot, type User } from "$lib/ts/types";
 	import { onMount, tick } from "svelte";
   import SlotStats from "./SlotStats.svelte";
 
-  const currentUser = {};
+  const currentUser: User = {
+    name: "Bob",
+    id: 0
+  };
   const now = new Date().getTime();
   export let slots: Timeslot[] = Array.from({ length: 10 }, (_, i) => {
     return {
@@ -12,10 +15,12 @@
       userValue: Availability.Unavailable,
       othersValues: {
         [Availability.Available]: [{
-          name: "John"
+          name: "John",
+          id: 1,
         }],
         [Availability.Unavailable]: [{
-          name: "Alice"
+          name: "Alice",
+          id: 2,
         }],
         [Availability.Inconvenient]: []
         // [{
@@ -34,22 +39,33 @@
   onMount(updateColumnWidth);
   const formatTime = (date: Date) => date.toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric" });
   let regionSelection: { index: number, availability: Availability } | null = null;
-  const startSelectRegion = (index: number, availability: Availability) => {
+  const startSelectRegion = (event: MouseEvent, index: number, availability: Availability) => {
     regionSelection = { index, availability };
+    hoveredWhileDown = {
+      start: index,
+      end: index,
+      availability
+    }
   };
+  let hoveredWhileDown: { start: number, end: number, availability: Availability } | null = null;
   let renderedSlotIndices = Array.from({ length: slots.length }, (_, i) => i);
-  const endRegionSelection = async (index: number, availability: Availability) => {
-    if (!regionSelection) return;
+  const endRegionSelection = async (index: number) => {
+    if (!regionSelection || !hoveredWhileDown) return;
     const start = Math.min(regionSelection.index, index);
     const end = Math.max(regionSelection.index, index);
     for (let i = start; i <= end; i++) {
-      slots[i] = { ...slots[i], userValue: availability };
+      slots[i] = { ...slots[i], userValue: hoveredWhileDown.availability };
     }
     renderedSlotIndices = renderedSlotIndices.filter(i => i < start || i > end);
     await tick();
     regionSelection = null;
     slots = [...slots];
     renderedSlotIndices = Array.from({ length: slots.length }, (_, i) => i);
+    hoveredWhileDown = null;
+  };
+  const checkIndex = (index: number, availability: Availability) => {
+    if (!regionSelection || !hoveredWhileDown) return false;
+    return hoveredWhileDown.start <= index && index <= hoveredWhileDown.end && availability === hoveredWhileDown.availability;
   };
 </script>
 <svelte:window on:resize={updateColumnWidth} />
@@ -58,7 +74,7 @@
     {#each slots as slot, index}
       <div class="column">
         <div class="top">
-          <SlotStats othersValues={slot.othersValues} />
+          <SlotStats timeslot={slot} />
         </div>
 
         {#if index === 0 || slot.begin.getTime() != slots[index - 1].end.getTime()}
@@ -71,12 +87,23 @@
             <div
               class="region {availability}-color"
               style="height: 100%; width: 100%;"
-              on:mousedown={() => startSelectRegion(index, availability)}
-              on:mouseup={() => endRegionSelection(index, availability)}
+              class:hovered={hoveredWhileDown && hoveredWhileDown.start <= index && index <= hoveredWhileDown.end && hoveredWhileDown.availability === availability}
+              class:hoverable={!hoveredWhileDown || hoveredWhileDown?.availability === availability}
+              on:pointerdown={(event) => startSelectRegion(event, index, availability)}
+              on:mouseup={() => endRegionSelection(index)}
+              on:mouseenter={() => {
+                if (regionSelection && hoveredWhileDown) {
+                  hoveredWhileDown = {
+                    start: Math.min(hoveredWhileDown.start, index),
+                    end: Math.max(hoveredWhileDown.end, index),
+                    availability: hoveredWhileDown.availability
+                  }
+                }
+              }}
             >
               <div>
                 <div class="dot absolute" />
-                {#if slot.userValue === availability && renderedSlotIndices.includes(index)}
+                {#if (((!hoveredWhileDown || index < hoveredWhileDown.start || index > hoveredWhileDown.end) && slot.userValue === availability) || checkIndex(index, availability)) && renderedSlotIndices.includes(index)}
                   <div class="overlay absolute checkmark" style="font-size: 50px; font-weight: bold;">✓</div>
                 {/if}
               </div>
@@ -107,7 +134,7 @@
     justify-content: center;
     width: var(--column-width);
     position: relative;
-    border-left: 5px solid rgb(255, 255, 255);
+    margin-left: 10px;
     height: 100%;
   }
   .absolute {
@@ -116,34 +143,41 @@
   }
   @keyframes fade-in {
     from {
-      opacity: 0;
       transform: translate(-50%, -50%) scale(0);
+      filter: opacity(0);
     }
     to {
-      opacity: 1;
       transform: translate(-50%, -50%) scale(1);
+      filter: opacity(1);
     }
   }
   .checkmark {
-    animation: fade-in 0.1s;
+    animation: fade-in 0.2s;
   }
   .dot {
     width: 60px;
     height: 60px;
     background-color: rgba(92, 92, 92, 0.229);
-    border-radius: 50%;
     transition: width 0.1s, height 0.1s;
+    transition-delay: 0.075s;
   }
-  .region:hover .dot {
+  .hovered .dot {
+    width: 100%;
+    border-radius: 0px;
+  }
+  .region:hover:not(.hovered).hoverable .dot {
     width: 70px;
     height: 70px;
+  }
+  .region.hoverable {
+    z-index: 100;
   }
   .regions {
     height: calc(100% - 120px);
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 10px;
     margin-top: 10px;
   }
   .region {
@@ -155,10 +189,8 @@
     overflow: hidden;
     cursor: pointer;
   }
-  .region:hover {
-    /* transform: scale(1.1); */
-    box-shadow: 0px 0px 10px rgba(160, 160, 160, 0.5);
-    z-index: 100;
+  .hovered {
+    transform: scale(1.1);
   }
   .top {
     position: absolute;
