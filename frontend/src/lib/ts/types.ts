@@ -2,6 +2,7 @@ export enum Availability {
   Available = "available",
   Unavailable = "unavailable",
   Inconvenient = "inconvenient",
+  Undefined = "undefined",
 }
 
 export interface User {
@@ -10,7 +11,9 @@ export interface User {
 };
 
 export type OthersValues = {
-  [key in Availability]: User[];
+  [Availability.Available]: User[];
+  [Availability.Unavailable]: User[];
+  [Availability.Inconvenient]: User[];
 };
 
 export interface Timeslot {

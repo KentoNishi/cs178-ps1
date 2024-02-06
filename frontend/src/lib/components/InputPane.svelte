@@ -8,6 +8,7 @@
     id: 0
   };
   const now = new Date('2/7/2024 12:00:00').getTime();
+  export let isWelcome = false;
   export let slots: Timeslot[] = Array.from({ length: 8 }, (_, i) => {
     return {
       begin: new Date(now + 1000 * 60 * 60 * i),
@@ -34,7 +35,7 @@
   const updateColumnWidth = () => {
     if (!scroller) return;
     const rect = scroller.getBoundingClientRect();
-    columnWidth = Math.max(100, rect.width / slots.length);
+    columnWidth = Math.max(100, rect.width / (1.2 * slots.length));
   };
   onMount(updateColumnWidth);
   const formatTime = (date: Date) => date.toLocaleTimeString("en-US", { hour: "numeric", minute: "numeric" });
@@ -56,10 +57,11 @@
     for (let i = start; i <= end; i++) {
       slots[i] = { ...slots[i], userValue: hoveredWhileDown.availability };
     }
+    slots = [...slots];
+    if (isWelcome) return;
     renderedSlotIndices = renderedSlotIndices.filter(i => i < start || i > end);
     await tick();
     regionSelection = null;
-    slots = [...slots];
     renderedSlotIndices = Array.from({ length: slots.length }, (_, i) => i);
     hoveredWhileDown = null;
   };
@@ -76,21 +78,28 @@
 </script>
 <svelte:window on:resize={updateColumnWidth}  />
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="scroller" style="--column-width: {columnWidth}px; --column-scale-factor: {ratio};" bind:this={scroller}>
+<div class="scroller" style="--column-width: {columnWidth}px; --column-scale-factor: {ratio};" class:welcome={isWelcome} bind:this={scroller}>
   <div class="wrapper" on:mouseleave={mouseLeftWindow} on:mouseenter={mouseLeftWindow}>
     {#each slots as slot, index}
       <div class="column">
-        <div class="top">
-          <SlotStats timeslot={slot} />
-        </div>
-
-        {#if index === 0 || slot.begin.getTime() != slots[index - 1].end.getTime()}
-          <p class="overlay bottom-left no-break">{formatTime(slot.begin)}</p>
+        {#if !isWelcome}
+          <div class="top">
+            <SlotStats timeslot={slot} />
+          </div>
         {/if}
-        <p class="overlay bottom-right no-break">{formatTime(slot.end)}</p>
+
+        {#if !isWelcome}
+          {#if index === 0 || slot.begin.getTime() != slots[index - 1].end.getTime()}
+            <span class="overlay bottom-left no-break time-marker">{formatTime(slot.begin)}</span>
+          {/if}
+          <span class="overlay bottom-right no-break time-marker">{formatTime(slot.end)}</span>
+        {/if}
         <div class="regions">
-          {#each [Availability.Available, Availability.Inconvenient, Availability.Unavailable] as availability}
-            {@const shouldShowCheckmark = (((!hoveredWhileDown || index < hoveredWhileDown.start || index > hoveredWhileDown.end) && slot.userValue === availability) || checkIndex(index, availability)) && renderedSlotIndices.includes(index)}
+          {#each (isWelcome ? [Availability.Undefined] : [Availability.Available, Availability.Inconvenient, Availability.Unavailable]) as availability}
+            {@const shouldShowCheckmark = (
+              (((!hoveredWhileDown || index < hoveredWhileDown.start || index > hoveredWhileDown.end) && slot.userValue === availability) || checkIndex(index, availability))
+              && renderedSlotIndices.includes(index)
+            )}
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             <div
               class="region {availability}-color"
@@ -112,7 +121,7 @@
             >
               <div class="region-inner shadow {index == hoveredWhileDown?.start ? 'leftmost-inner leftmost-border' : ''} {index == hoveredWhileDown?.end ? 'rightmost-inner rightmost-border' : ''}" />
               <div class="region-inner">
-                <div class="dot absolute" />
+                <div class="dot absolute col-query" />
                 {#if shouldShowCheckmark}
                   <div class="overlay absolute checkmark" style="font-size: 50px; font-weight: bold;">✓</div>
                 {/if}
@@ -135,10 +144,22 @@
     overflow-x: scroll;
     overflow-y: hidden;
     padding: 0px calc(var(--column-width) / 2);
-    height: 100vh;
-    width: 100%;
+    height: calc(100vh - 200px);
+    width: calc(100% - 200px);
     box-sizing: border-box;
     user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .welcome {
+    overflow: hidden;
+  }
+  .welcome.scroller {
+    height: unset !important;
+  }
+  .welcome .regions {
+    height: calc((100vh - 400px) / 3);
   }
   .column {
     display: flex;
@@ -258,5 +279,10 @@
   }
   .overlay {
     z-index: 100;
+  }
+  .time-marker {
+    font-size: 2rem;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.5);
   }
 </style>

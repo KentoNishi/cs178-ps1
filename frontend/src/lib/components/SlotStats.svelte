@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Availability, type OthersValues, type Timeslot } from "$lib/ts/types";
+  import { Availability, type Timeslot } from "$lib/ts/types";
 
   export let timeslot: Timeslot;
   $: othersValues = timeslot.othersValues; 

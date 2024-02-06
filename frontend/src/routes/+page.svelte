@@ -1,7 +1,12 @@
 <script>
 	import InputPane from "$lib/components/InputPane.svelte";
+  import Welcome from "$lib/components/Welcome.svelte";
 </script>
-<InputPane />
+
+<div class="page">
+  <InputPane />
+</div>
+<Welcome />
 
 <style>
   :global(body) {
@@ -16,5 +21,15 @@
   }
   :global(.unavailable-color) {
     background-color: rgb(255, 91, 91);
+  }
+  :global(.undefined-color) {
+    background-color: rgb(213, 213, 213);
+  }
+  .page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
   }
 </style>
