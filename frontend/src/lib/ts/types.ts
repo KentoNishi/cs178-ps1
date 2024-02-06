@@ -22,3 +22,8 @@ export interface Timeslot {
   userValue: Availability;
   othersValues: OthersValues;
 }
+
+export interface DayInput {
+  day: Date;
+  slots: Timeslot[];
+}

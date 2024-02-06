@@ -8,7 +8,7 @@
   <PaneGroup />
   <!-- <InputPane /> -->
 </div>
-<!-- <Welcome /> -->
+<Welcome />
 
 <style>
   :global(body) {
