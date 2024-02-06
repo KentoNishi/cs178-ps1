@@ -7,8 +7,8 @@
     name: "Bob",
     id: 0
   };
-  const now = new Date().getTime();
-  export let slots: Timeslot[] = Array.from({ length: 10 }, (_, i) => {
+  const now = new Date('2/7/2024 12:00:00').getTime();
+  export let slots: Timeslot[] = Array.from({ length: 8 }, (_, i) => {
     return {
       begin: new Date(now + 1000 * 60 * 60 * i),
       end: new Date(now + 1000 * 60 * 60 * (i + 1)),
@@ -68,10 +68,16 @@
     return hoveredWhileDown.start <= index && index <= hoveredWhileDown.end && availability === hoveredWhileDown.availability;
   };
   $: ratio = (columnWidth + 20) / columnWidth;
+  const mouseLeftWindow = () => {
+    if (hoveredWhileDown) {
+      endRegionSelection(hoveredWhileDown.end);
+    }
+  };
 </script>
-<svelte:window on:resize={updateColumnWidth} />
-<div class="scroller" style="--column-width: {columnWidth}px; --column-scale-factor: {ratio}; --px20-scaled: {-20 * ratio}px;" bind:this={scroller}>
-  <div class="wrapper">
+<svelte:window on:resize={updateColumnWidth}  />
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="scroller" style="--column-width: {columnWidth}px; --column-scale-factor: {ratio};" bind:this={scroller}>
+  <div class="wrapper" on:mouseleave={mouseLeftWindow} on:mouseenter={mouseLeftWindow}>
     {#each slots as slot, index}
       <div class="column">
         <div class="top">
@@ -130,6 +136,8 @@
     overflow-y: hidden;
     padding: 0px calc(var(--column-width) / 2);
     height: 100vh;
+    width: 100%;
+    box-sizing: border-box;
     user-select: none;
   }
   .column {
@@ -182,11 +190,13 @@
   }
   .region {
     transition: 0.1s;
-    border-radius: 5px;
     overflow: hidden;
     cursor: pointer;
     overflow: visible;
     position: relative;
+  }
+  .region:not(.floating) {
+    border-radius: 5px;
   }
   .floating.region {
     z-index: 1000;
@@ -194,17 +204,17 @@
   }
   .floating .shadow {
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.281);
-    clip-path: inset(var(--px20-scaled) var(--px20-scaled) var(--px20-scaled) 0px);
+    clip-path: inset(-40px calc(10px / var(--column-scale-factor)) -40px 0px);
     position: absolute;
   }
   .leftmost-inner {
-    clip-path: inset(var(--px20-scaled) var(--px20-scaled) var(--px20-scaled) var(--px20-scaled)) !important;
+    clip-path: inset(-40px calc(10px / var(--column-scale-factor)) -40px -40px) !important;
   }
   .rightmost-inner {
-    clip-path: inset(var(--px20-scaled) 0px var(--px20-scaled) 0px);
+    clip-path: inset(-40px -40px -40px 0px) !important;
   }
   .leftmost-inner.rightmost-inner {
-    clip-path: inset(var(--px20-scaled) var(--px20-scaled) var(--px20-scaled) var(--px20-scaled)) !important;
+    clip-path: inset(-40px -40px -40px -40px) !important;
   }
   .leftmost-border {
     border-radius: 5px 0px 0px 5px;
