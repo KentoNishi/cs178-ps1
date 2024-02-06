@@ -54,11 +54,11 @@
       slots[i] = { ...slots[i], userValue: hoveredWhileDown.availability };
     }
     slots = [...slots];
-    if (isWelcome) return;
     renderedSlotIndices = renderedSlotIndices.filter(i => i < start || i > end);
     await tick();
     regionSelection = null;
     renderedSlotIndices = Array.from({ length: slots.length }, (_, i) => i);
+    if (isWelcome && end - start == 7) return;
     hoveredWhileDown = null;
   };
   const checkIndex = (index: number, availability: Availability) => {
