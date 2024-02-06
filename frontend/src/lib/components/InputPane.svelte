@@ -1,12 +1,8 @@
 <script lang="ts">
-	import { Availability, type Timeslot, type User } from "$lib/ts/types";
+	import { Availability, type Timeslot } from "$lib/ts/types";
 	import { onMount, tick } from "svelte";
   import SlotStats from "./SlotStats.svelte";
 
-  const currentUser: User = {
-    name: "Bob",
-    id: 0
-  };
   const now = new Date('2/7/2024 12:00:00').getTime();
   export let isWelcome = false;
   export let slots: Timeslot[] = Array.from({ length: 8 }, (_, i) => {
@@ -156,7 +152,7 @@
     overflow: hidden;
   }
   .welcome.scroller {
-    height: unset !important;
+    height: 50vh;
   }
   .welcome .regions {
     height: calc((100vh - 400px) / 3);
