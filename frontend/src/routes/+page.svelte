@@ -1,12 +1,14 @@
 <script>
 	import InputPane from "$lib/components/InputPane.svelte";
   import Welcome from "$lib/components/Welcome.svelte";
+  import PaneGroup from "$lib/components/PaneGroup.svelte";
 </script>
 
 <div class="page">
-  <InputPane />
+  <PaneGroup />
+  <!-- <InputPane /> -->
 </div>
-<Welcome />
+<!-- <Welcome /> -->
 
 <style>
   :global(body) {
