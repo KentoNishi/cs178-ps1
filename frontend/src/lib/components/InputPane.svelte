@@ -2,6 +2,7 @@
 	import { Availability, type Timeslot } from "$lib/ts/types";
 	import { onMount, tick } from "svelte";
   import SlotStats from "./SlotStats.svelte";
+	import { fade } from "svelte/transition";
 
   const now = new Date('2/7/2024 12:00:00').getTime();
   export let isWelcome = false;
@@ -46,6 +47,7 @@
   };
   let hoveredWhileDown: { start: number, end: number, availability: Availability } | null = null;
   let renderedSlotIndices = Array.from({ length: slots.length }, (_, i) => i);
+  let renderView = false;
   const endRegionSelection = async (index: number) => {
     if (!regionSelection || !hoveredWhileDown) return;
     const start = Math.min(hoveredWhileDown.start, index);
@@ -71,6 +73,13 @@
       endRegionSelection(hoveredWhileDown.end);
     }
   };
+  $: slots, (async () => {
+    renderView = false;
+    await tick();
+    setTimeout(() => {
+      renderView = true;
+    }, 250);
+  })();
 </script>
 <svelte:window on:resize={updateColumnWidth}  />
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -84,9 +93,9 @@
         {/each}
       </div>
     </div>
-    {/if }
-    {#each slots as slot, index}
-      <div class="column">
+    {/if}
+    {#each (renderView ? slots : []) as slot, index}
+      <div class="column" transition:fade>
         {#if !isWelcome}
           <div class="top">
             <SlotStats timeslot={slot} />
@@ -166,11 +175,14 @@
     height: 100%;
   }
   .scroller {
-    overflow-x: scroll;
+    /* overflow-x: scroll; */
+    width: calc(100% - 200px);
+    overflow-x: hidden;
+    margin-right: 40px;
+    margin-bottom: 20px;
     overflow-y: hidden;
     padding: 0px calc(var(--column-width) / 2);
     height: calc(100vh - 200px);
-    width: calc(100% - 200px);
     box-sizing: border-box;
     user-select: none;
     display: flex;

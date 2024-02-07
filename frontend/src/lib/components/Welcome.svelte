@@ -21,25 +21,14 @@
   }
   $: open = !checkIfUnlocked(fakeData);
   let dialogElem: HTMLDivElement;
-  let leftmostX = 0;
-  let rightmostX = 0;
-  const recalcBounds = async () => {
-    await tick();
-    const elems = Array.from(dialogElem.querySelectorAll(".col-query"));
-    leftmostX = elems[0].getBoundingClientRect().left;
-    rightmostX = elems[elems.length - 1].getBoundingClientRect().left - 60;
-  };
-  onMount(recalcBounds);
 </script>
 
-<svelte:window on:resize={recalcBounds} />
-
+<div class="dialog" bind:this={dialogElem} class:fadeout={!open}>
+  <h1>Swipe to Start</h1>
+  <InputPane bind:slots={fakeData} isWelcome />
+</div>
 {#if open}
-  <div class="dialog" transition:fade bind:this={dialogElem}>
-    <h1>Swipe to Start</h1>
-    <InputPane bind:slots={fakeData} isWelcome />
-  </div>
-  <img src={tap} alt="tap" class="tap" class:pulse-floating={open} transition:fade style="--leftmost-x: {leftmostX}px; --rightmost-x: {rightmostX}px;" />
+  <img src={tap} alt="tap" class="tap" class:pulse-floating={open} transition:fade style="--leftmost-x: 150px; --rightmost-x: calc(90% - 200px);" />
 {/if}
 
 <style>
@@ -58,6 +47,21 @@
   }
   h1 {
     font-size: 4em;
+  }
+  
+  @keyframes fadeout {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  .fadeout {
+    touch-action: none;
+    pointer-events: none;
+    animation: fadeout 0.4s;
+    animation-fill-mode: forwards;
   }
   @keyframes pulse-floating {
     0% {
