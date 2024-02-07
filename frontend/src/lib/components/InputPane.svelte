@@ -137,7 +137,7 @@
     height: 100%;
   }
   .scroller {
-    overflow-x: scroll;
+    overflow-x: hidden;
     overflow-y: hidden;
     padding: 0px calc(var(--column-width) / 2);
     height: calc(100vh - 200px);

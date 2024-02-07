@@ -31,14 +31,19 @@
     };
   });
 
-  let currentDisplayDay = DayInputs[0].slots;
+  let currentDisplayDay = DayInputs[0];
+
+  function to_day_label(day : Date) {
+    return `${day.toLocaleDateString("en-us", { weekday: 'long' })} ${day.getMonth() + 1}/${day.getDate()}`
+  }
+
 </script>
 
-<InputPane bind:slots={currentDisplayDay} />
+<InputPane bind:slots={currentDisplayDay.slots} />
 
 <div class="day-menu">
   {#each DayInputs as day}
-    <button class="day-option" on:click={() => currentDisplayDay=day.slots}> {day.day.toLocaleDateString("en-us", { weekday: 'long' })}</button>
+    <button class="day-option" id="{currentDisplayDay.day === day.day ? 'active' : ''}" on:click={() =>{currentDisplayDay=day}}> {to_day_label(day.day)}</button>
   {/each}
 </div>
 
@@ -49,7 +54,7 @@
   .day-menu {
     display: flex;
     flex-direction: row;
-    gap: 5px;
+    gap: 3px;
     justify-content: center;
     align-items: center;
     width: 200px;
@@ -61,20 +66,31 @@
     outline: 0;
     border: none;
     cursor: pointer;
-    font-weight: 600;
-    border-radius: 4px;
-    font-size: 13px;
-    height: 30px;
+    font-weight: 800;
+    font-size: 20px;
+    height: 60px;
     background-color: #9147ff;
     color: white;
     padding: 0 10px;
+  }
+
+  .day-option:first-of-type {
+    border-radius: 0px 0px 0px 10px;
+  }
+
+  .day-option:last-of-type {
+    border-radius: 0px 0px 10px 0px;
   }
 
   .day-option:hover {
     background-color: #772ce8;
   }
 
-  .day-selected {
+  #active {
+    background-color: #321164;
+  }
+
+  #active:hover {
     background-color: #321164;
   }
 
