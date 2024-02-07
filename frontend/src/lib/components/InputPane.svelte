@@ -73,13 +73,13 @@
       endRegionSelection(hoveredWhileDown.end);
     }
   };
-  $: slots, (async () => {
-    renderView = false;
-    await tick();
-    setTimeout(() => {
-      renderView = true;
-    }, 250);
-  })();
+  // $: slots, (async () => {
+  //   renderView = false;
+  //   await tick();
+  //   setTimeout(() => {
+  //     renderView = true;
+  //   }, 250);
+  // })();
 </script>
 <svelte:window on:resize={updateColumnWidth}  />
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -94,8 +94,8 @@
       </div>
     </div>
     {/if}
-    {#each (renderView ? slots : []) as slot, index}
-      <div class="column" transition:fade>
+    {#each slots as slot, index}
+      <div class="column">
         {#if !isWelcome}
           <div class="top">
             <SlotStats timeslot={slot} />
