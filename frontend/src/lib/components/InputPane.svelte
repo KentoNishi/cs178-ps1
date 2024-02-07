@@ -140,15 +140,6 @@
 </div>
 
 <style>
-
-  .row-label {
-    position: absolute;
-    transform: rotate(-90deg) translateY(-30px) translateX(00px);
-    transform-origin: top left;
-    /* writing-mode: bt-lr ; */
-    /* writing-mode: ; Vertical layout from right to left */
-    white-space: nowrap; /* Prevent text from wrapping */
-  }
   .label-column {
     display: flex;
     align-items: center;
@@ -161,9 +152,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 20px;
+    font-size: 18px;
     text-transform: uppercase;
-    font-weight: bolder;
+    font-weight: 900;
     height: 100%;
     /* No inherent way to do this, so have to do this and then 180 rotate. Avoids pain with bounding box tho so :) */
     writing-mode: vertical-rl;
@@ -175,7 +166,7 @@
     height: 100%;
   }
   .scroller {
-    overflow-x: hidden;
+    overflow-x: scroll;
     overflow-y: hidden;
     padding: 0px calc(var(--column-width) / 2);
     height: calc(100vh - 200px);

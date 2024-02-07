@@ -31,6 +31,34 @@
     };
   });
 
+  const sat = new Date(`2/10/2024 12:00:00`);
+  DayInputs.push(
+    {
+      day: sat,
+      slots: (Array.from({ length: 4}, (_, i) => {
+        return {
+          begin: new Date(sat.getTime() + 1000 * 60 * 60 * i),
+          end: new Date(sat.getTime() + 1000 * 60 * 60 * (i + 1)),
+          userValue: Availability.Unavailable,
+          othersValues: {
+            [Availability.Available]: [{
+              name: "John",
+              id: 1,
+            }],
+            [Availability.Unavailable]: [{
+              name: "Alice",
+              id: 2,
+            }],
+            [Availability.Inconvenient]: []
+            // [{
+            //   name: "Bob"
+            // }]
+          }
+        };
+      }))
+    }
+  );
+
   let currentDisplayDay = DayInputs[0];
 
   function to_day_string(day : Date) {
@@ -68,7 +96,7 @@
     justify-content: center;
     align-items: center;
     /* This is a terrible way to fix this, why does flex: 1 not obey me, maybe I'm being dumb */
-    min-width: 450px;
+    min-width: 700px;
   }
 
   /* Credit: https://copy-paste-css.com/ using the second twitch button CSS as template for quick button styling proto */
