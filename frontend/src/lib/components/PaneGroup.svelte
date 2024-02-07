@@ -33,8 +33,12 @@
 
   let currentDisplayDay = DayInputs[0];
 
-  function to_day_label(day : Date) {
-    return `${day.toLocaleDateString("en-us", { weekday: 'long' })} ${day.getMonth() + 1}/${day.getDate()}`
+  function to_day_string(day : Date) {
+    return `${day.toLocaleDateString("en-us", { weekday: 'long' })}`;
+  }
+
+  function to_date_string(day: Date) {
+    return `${day.getMonth() + 1}/${day.getDate()}`
   }
 
 </script>
@@ -43,13 +47,19 @@
 
 <div class="day-menu">
   {#each DayInputs as day}
-    <button class="day-option" id="{currentDisplayDay.day === day.day ? 'active' : ''}" on:click={() =>{currentDisplayDay=day}}> {to_day_label(day.day)}</button>
+    <button class="day-option" id="{currentDisplayDay.day === day.day ? 'active' : ''}" on:click={() =>{currentDisplayDay=day}}>
+      <div class="ta-center"> {to_day_string(day.day)} </div>
+      <div class="ta-center"> {to_date_string(day.day)} </div>
+    </button>
   {/each}
 </div>
 
 
-
 <style>
+  .ta-center {
+    width: 100%;
+    text-align: center;
+  }
 
   .day-menu {
     display: flex;
@@ -57,17 +67,24 @@
     gap: 3px;
     justify-content: center;
     align-items: center;
-    width: 200px;
+    /* This is a terrible way to fix this, why does flex: 1 not obey me, maybe I'm being dumb */
+    min-width: 450px;
   }
 
   /* Credit: https://copy-paste-css.com/ using the second twitch button CSS as template for quick button styling proto */
   .day-option {
-    display: inline-block;
+    box-sizing: border-box;
+    text-wrap: pretty;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     outline: 0;
     border: none;
     cursor: pointer;
     font-weight: 800;
     font-size: 20px;
+    min-width: 0;
     height: 60px;
     background-color: #9147ff;
     color: white;
