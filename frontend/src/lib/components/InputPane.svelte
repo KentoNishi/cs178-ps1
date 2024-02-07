@@ -76,6 +76,15 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="scroller" style="--column-width: {columnWidth}px; --column-scale-factor: {ratio};" class:welcome={isWelcome} bind:this={scroller}>
   <div class="wrapper" on:mouseleave={mouseLeftWindow} on:mouseenter={mouseLeftWindow}>
+    {#if !isWelcome}
+    <div class="label-column">
+      <div class="regions">
+        {#each [Availability.Available, Availability.Inconvenient, Availability.Unavailable] as availability}
+          <div class="label"> {availability} </div>
+        {/each}
+      </div>
+    </div>
+    {/if }
     {#each slots as slot, index}
       <div class="column">
         {#if !isWelcome}
@@ -91,7 +100,7 @@
           <span class="overlay bottom-right no-break time-marker">{formatTime(slot.end)}</span>
         {/if}
         <div class="regions">
-          {#each (isWelcome ? [Availability.Undefined] : [Availability.Available, Availability.Inconvenient, Availability.Unavailable]) as availability}
+          {#each (isWelcome ? [Availability.Undefined] : [Availability.Available, Availability.Inconvenient, Availability.Unavailable]) as availability, rowIndex}
             {@const shouldShowCheckmark = (
               (((!hoveredWhileDown || index < hoveredWhileDown.start || index > hoveredWhileDown.end) && slot.userValue === availability) || checkIndex(index, availability))
               && renderedSlotIndices.includes(index)
@@ -131,6 +140,35 @@
 </div>
 
 <style>
+
+  .row-label {
+    position: absolute;
+    transform: rotate(-90deg) translateY(-30px) translateX(00px);
+    transform-origin: top left;
+    /* writing-mode: bt-lr ; */
+    /* writing-mode: ; Vertical layout from right to left */
+    white-space: nowrap; /* Prevent text from wrapping */
+  }
+  .label-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-left: 10px;
+    height: 100%;
+  }
+  .label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    text-transform: uppercase;
+    font-weight: bolder;
+    height: 100%;
+    /* No inherent way to do this, so have to do this and then 180 rotate. Avoids pain with bounding box tho so :) */
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
   .wrapper {
     display: inline-flex;
     flex-direction: row;

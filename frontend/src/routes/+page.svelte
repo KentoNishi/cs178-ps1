@@ -6,7 +6,6 @@
 
 <div class="page">
   <PaneGroup />
-  <!-- <InputPane /> -->
 </div>
 <Welcome />
 
