@@ -177,10 +177,9 @@
   .scroller {
     /* overflow-x: scroll; */
     width: calc(100% - 200px);
-    overflow-x: hidden;
+    overflow-x: visible;
     margin-right: 40px;
     margin-bottom: 20px;
-    overflow-y: hidden;
     padding: 0px calc(var(--column-width) / 2);
     height: calc(100vh - 200px);
     box-sizing: border-box;
